@@ -42,9 +42,6 @@ rim.elem_count = spoke.count;
 
 %% Deflection Calculation
 U = zeros(max(max(nodemap))*2, 1); %2DoF per node
-U(2) = 0.1;
-U(3) = 0.05;
-
 
 
 
