@@ -1,4 +1,4 @@
-function [] = PlotStructure(glob_coord, U, nodemap)
+function [] = PlotStructure(spoke, glob_coord, U, nodemap)
 X = glob_coord(1,:);
 Y = glob_coord(2,:);
 % Scale deformation to set Max deflection to 1mm equiv
