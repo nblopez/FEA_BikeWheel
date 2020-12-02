@@ -1,7 +1,7 @@
 %% main.m 
 % This file contains material and node parameters
 % as well as required set of functions to run analysis
-
+clc
 %% Spoke Parameters
 spoke = struct();
 spoke.material = 'Stainless Steel';
@@ -20,7 +20,7 @@ rim.diameter = spoke.length * 2; %m
 rim.thickness = 0.25; %m
 
 %% Modifiable Parameters
-spoke.count = 36; %System is impossible to solve with less than 3 spokes
+spoke.count = 10;
 spoke.pattern = 'radial';
 % spoke.pattern = '1-cross';
 % spoke.pattern = '2-cross';
@@ -29,7 +29,14 @@ spoke.pattern = 'radial';
 rim.elem_count = spoke.count;
 rim.node_count = 3 * rim.elem_count;
 
+%% Script Startup Output
+fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+fprintf('Beginning of FEA of Bike Wheel\n')
+fprintf('Spoke Count: %d\nSpoke Pattern: %s\n',spoke.count, spoke.pattern)
+fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+%% Calculate Nodemap and Global Coordinates
 [nodemap, glob_coord] = node_mapper(spoke, rim);
+nnodes = max(max(nodemap));
 % Row 1 of glob_coord is X, Row 2 of glob_coord is Y
 
 
@@ -43,15 +50,29 @@ rim.node_count = 3 * rim.elem_count;
 
 
 %% Deflection Calculation
-U = zeros(max(max(nodemap))*2, 1); %2DoF per node
+U = zeros(nnodes*2, 1); %2DoF per node
+U(4) = 1;
 
 
+%% Analysis Outputs
+fprintf('Node Map; Nodes of value 0 do not exist.\n')
+disp(nodemap)
 
-%% Graphical Output
-PlotStructure(glob_coord, U, nodemap)
+fprintf('Global Coordinates; [X, Y]^T\n')
+disp(glob_coord)
 
 
+fprintf('Node Deformation Array;\nNumber, X [mm], Y [mm]\n')
+node_def = [[1:nnodes]', [U(1:2:end) * 1e3, U(2:2:end) * 1e3]];
+disp(node_def)
 
+[max_def_row, ~] = ind2sub(size(node_def), find(node_def == max(max(node_def))));
+fprintf('Maximum deflection occurs at node: %d\nDeflections [mm]: X = %0.3f, Y = %0.3f\n', ...
+    node_def(max_def_row, 1), node_def(max_def_row, 2), node_def(max_def_row, 3))
+    
+
+
+PlotStructure(spoke, glob_coord, U, nodemap)
 
 
 
