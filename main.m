@@ -20,7 +20,7 @@ rim.diameter = spoke.length * 2; %m
 rim.thickness = 0.25; %m
 
 %% Modifiable Parameters
-spoke.count = 10;
+spoke.count = 4;
 spoke.pattern = 'radial';
 % spoke.pattern = '1-cross';
 % spoke.pattern = '2-cross';

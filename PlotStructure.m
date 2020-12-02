@@ -29,18 +29,18 @@ for ii = 1:length(nodemap)
 %         fprintf('Plot Element %d; Nodes: %d, %d\n',...
 %             ii, enodes(jj-1), enodes(jj))
     end
-%     mean_x = mean(X_def(enodes(2:end)));
-%     mean_y = mean(Y_def(enodes(2:end)));
-%     text(mean_x, mean_y, cellstr(['Element ',num2str(ii)]), 'Color',...
+%     mean_x = mean(X_vec);
+%     mean_y = mean(Y_vec);
+%     text(mean_x, mean_y, cellstr(num2str(ii)), 'Color',...
 %         'white','BackgroundColor', 'blue')
 end
 scatter(X, Y, 250, 'r.')
 % scatter(X_def, Y_def, 25, 'b', 'Filled')
 
-% dx = 0;
-% dy = 0.2;
-% text(X+dx, Y+dy, cellstr(num2str([1:length(X)]')),...
-%     'Color', 'white','BackgroundColor', 'black');
+dx = 0;
+dy = 0.05;
+text(X+dx, Y+dy, cellstr(num2str([1:length(X)]')),...
+    'Color', 'white','BackgroundColor', 'black');
 
 grid;
 legend('Original', 'Deformed', 'location', 'best')
