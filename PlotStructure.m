@@ -2,7 +2,8 @@ function [] = PlotStructure(glob_coord, U, nodemap)
 X = glob_coord(1,:);
 Y = glob_coord(2,:);
 % Scale deformation to set Max deflection to 1mm equiv
-scale_val = 1e-1 / max(abs(U));
+% scale_val = 1e-1 / max(abs(U));
+scale_val = 1;
 X_def = X' + U(1:2:end) .* scale_val;
 Y_def = Y' + U(2:2:end) .* scale_val;
 
@@ -12,7 +13,10 @@ hold on
 % fprintf('\nPlotting Node Deformations\n')
 for ii = 1:length(nodemap)
     enodes = nodemap(ii, :);
-    enodes = [enodes(end), enodes]; %Put end of enodes at beginning
+    if enodes(end) == 0
+        enodes = enodes(1:end-1);
+    end
+%     enodes = [enodes(end), enodes]; %Put end of enodes at beginning
     for jj = 2:length(enodes)
         X_vec = [X(enodes(jj-1)), X(enodes(jj))];
         Y_vec = [Y(enodes(jj-1)), Y(enodes(jj))];
@@ -21,7 +25,7 @@ for ii = 1:length(nodemap)
         Ydef_vec = [Y_def(enodes(jj-1)), Y_def(enodes(jj))];
         
         plot(X_vec, Y_vec, 'k', 'LineWidth', 1.25)
-        plot(Xdef_vec, Ydef_vec, 'b--', 'LineWidth', 2)
+%         plot(Xdef_vec, Ydef_vec, 'b--', 'LineWidth', 2)
 %         fprintf('Plot Element %d; Nodes: %d, %d\n',...
 %             ii, enodes(jj-1), enodes(jj))
     end
@@ -31,7 +35,7 @@ for ii = 1:length(nodemap)
 %         'white','BackgroundColor', 'blue')
 end
 scatter(X, Y, 250, 'r.')
-scatter(X_def, Y_def, 25, 'b', 'Filled')
+% scatter(X_def, Y_def, 25, 'b', 'Filled')
 
 % dx = 0;
 % dy = 0.2;
