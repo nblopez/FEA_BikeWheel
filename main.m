@@ -20,12 +20,14 @@ rim.diameter = spoke.length * 2; %m
 rim.thickness = 0.25; %m
 
 %% Modifiable Parameters
-spoke.count = 20; %System is impossible to solve with less than 3 spokes
+spoke.count = 36; %System is impossible to solve with less than 3 spokes
 spoke.pattern = 'radial';
 % spoke.pattern = '1-cross';
 % spoke.pattern = '2-cross';
 
+% 3 Nodes per element on rim 
 rim.elem_count = spoke.count;
+rim.node_count = 3 * rim.elem_count;
 
 [nodemap, glob_coord] = node_mapper(spoke, rim);
 % Row 1 of glob_coord is X, Row 2 of glob_coord is Y
