@@ -20,7 +20,7 @@ for spoke_node = 1:spoke.count
             
         case '1-cross'
             % Even spokes forward 2 nodes, odd spokes backwards 2
-            if mod(spoke_node,2) == 0
+            if mod(spoke_node, 2) == 0
                 %Even spokes
                 spoke_connection = [spoke_node, 2 * spoke_node + spoke.count - 2, 0];
             else
@@ -31,14 +31,24 @@ for spoke_node = 1:spoke.count
             
         case '2-cross'
             % Not written yet
+            if mod(spoke_node, 2) == 0
+                spoke_connection = [spoke_node, 2 * spoke_node + spoke.count - 4, 0];
+            else
+                spoke_connection = [spoke_node, 2 * spoke_node + spoke.count + 4, 0];
+            end
+            if spoke_node == 2
+                spoke_connection(2) = rim.node_count;
+            end
+            nodemap(spoke.count + spoke_node, :) = spoke_connection;
      
             
     end
-    % Rim element mapping
+     % Rim element mapping
     rim_elem_num = spoke_node + 2 * spoke.count;
     nodemap(rim_elem_num, :) = [2*spoke_node + spoke.count - 1,...
         2*spoke_node + spoke.count,...
-        2*spoke_node + spoke.count + 1];    
+        2*spoke_node + spoke.count + 1];  
+     
 end
 nodemap(end,3) = spoke.count + 1; %Set last element to connect to first node of rim
 
