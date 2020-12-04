@@ -2,7 +2,8 @@
 % This file contains material and node parameters
 % as well as required set of functions to run analysis
 clc
-%% Spoke Parameters
+%% Object Parameters
+% Spoke Parameters
 spoke = struct();
 spoke.material = 'Stainless Steel';
 spoke.rho = 7600; %kg/m^3
@@ -10,14 +11,17 @@ spoke.E = 190 * 10^9; %Pa
 spoke.length = 0.33; %m (330mm)
 spoke.diameter = 0.002; %m (2mm)
 
+% Hub Parameters
+hub = struct();
 
 % Rim Parameters
 rim = struct();
 rim.material = 'Aluminum';
 rim.rho = 2700; %kg/m^3
 rim.E = 70 * 10^9; %Pa
-rim.diameter = spoke.length * 2; %m
+rim.diameter = spoke.length * 2 %m
 rim.thickness = 0.25; %m
+
 
 %% Modifiable Parameters
 spoke.count = 4;
@@ -35,7 +39,7 @@ fprintf('Beginning of FEA of Bike Wheel\n')
 fprintf('Spoke Count: %d\nSpoke Pattern: %s\n',spoke.count, spoke.pattern)
 fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 %% Calculate Nodemap and Global Coordinates
-[nodemap, glob_coord] = node_mapper(spoke, rim);
+[nodemap, glob_coord] = node_mapper(spoke, rim, hub);
 nnodes = max(max(nodemap));
 % Row 1 of glob_coord is X, Row 2 of glob_coord is Y
 
