@@ -1,4 +1,4 @@
-%% main.m 
+%% main.m
 % This file contains material and node parameters
 % as well as required set of functions to run analysis
 clc
@@ -16,7 +16,7 @@ hub = struct();
 hub.material = 'Super Stiff Material';
 hub.rho = 0; %Weightless
 hub.E = 1e30; %Super stiff
-hub.diameter = 0.1; 
+hub.diameter = 0.1;
 
 % Rim Parameters
 rim = struct();
@@ -28,12 +28,12 @@ rim.thickness = 0.25; %m
 
 
 %% Modifiable Parameters
-spoke.count = 20;
-spoke.pattern = 'radial';
-% spoke.pattern = '1-cross';
-% spoke.pattern = '2-cross';
+spoke.count = 12;
+% spoke.pattern = 'radial'; %Minimum 3 spokes
+spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
+% spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
 
-% 3 Nodes per element on rim 
+% 3 Nodes per element on rim
 rim.elem_count = spoke.count;
 rim.node_count = 3 * rim.elem_count;
 
@@ -63,21 +63,23 @@ U(4) = 1;
 
 
 %% Analysis Outputs
-fprintf('Node Map; Nodes of value 0 do not exist.\n')
-disp(nodemap)
-
-fprintf('Global Coordinates; [X, Y]^T\n')
-disp(glob_coord)
-
-
-fprintf('Node Deformation Array;\nNumber, X [mm], Y [mm]\n')
-node_def = [[1:nnodes]', [U(1:2:end) * 1e3, U(2:2:end) * 1e3]];
-disp(node_def)
-
-[max_def_row, ~] = ind2sub(size(node_def), find(node_def == max(max(node_def))));
-fprintf('Maximum deflection occurs at node: %d\nDeflections [mm]: X = %0.3f, Y = %0.3f\n', ...
-    node_def(max_def_row, 1), node_def(max_def_row, 2), node_def(max_def_row, 3))
+print_details = input('Would you like to print fine details? [y, n] ', 's');
+if strcmp(print_details, 'y')
+    fprintf('Node Map; Nodes of value 0 do not exist.\n')
+    disp(nodemap)
     
+    fprintf('Global Coordinates; [X, Y]^T\n')
+    disp(glob_coord)
+    
+    
+    fprintf('Node Deformation Array;\nNumber, X [mm], Y [mm]\n')
+    node_def = [[1:nnodes]', U(1:2:end) * 1e3, U(2:2:end) * 1e3];
+    disp(node_def)
+    
+    [max_def_row, ~] = ind2sub(size(node_def), find(node_def == max(max(node_def))));
+    fprintf('Maximum deflection occurs at node: %d\nDeflections [mm]: X = %0.3f, Y = %0.3f\n', ...
+        node_def(max_def_row, 1), node_def(max_def_row, 2), node_def(max_def_row, 3))
+end
 
 
 PlotStructure(spoke, glob_coord, U, nodemap)
