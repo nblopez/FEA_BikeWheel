@@ -13,18 +13,22 @@ spoke.diameter = 0.002; %m (2mm)
 
 % Hub Parameters
 hub = struct();
+hub.material = 'Super Stiff Material';
+hub.rho = 0; %Weightless
+hub.E = 1e30; %Super stiff
+hub.diameter = 0.1; 
 
 % Rim Parameters
 rim = struct();
 rim.material = 'Aluminum';
 rim.rho = 2700; %kg/m^3
 rim.E = 70 * 10^9; %Pa
-rim.diameter = spoke.length * 2 %m
+rim.diameter = spoke.length * 2 + hub.diameter; %m
 rim.thickness = 0.25; %m
 
 
 %% Modifiable Parameters
-spoke.count = 4;
+spoke.count = 20;
 spoke.pattern = 'radial';
 % spoke.pattern = '1-cross';
 % spoke.pattern = '2-cross';
