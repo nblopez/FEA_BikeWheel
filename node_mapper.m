@@ -1,4 +1,4 @@
-function [nodemap, glob_coord] = node_mapper(spoke, rim)
+function [nodemap, glob_coord] = node_mapper(spoke, rim, hub)
 
 % Node 1 is hub center
 % Node 2 is assumed to be directly below
@@ -6,7 +6,6 @@ function [nodemap, glob_coord] = node_mapper(spoke, rim)
 nodemap = zeros(spoke.count + rim.elem_count, 3);
 spoke_angle_spacing = 2 * pi / spoke.count;
 node_angle_spacing = spoke_angle_spacing / 2;
-
 
 switch spoke.pattern
     
