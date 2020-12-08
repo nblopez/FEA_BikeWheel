@@ -28,11 +28,11 @@ rim.thickness = 0.25; %m
 
 
 %% Modifiable Parameters
-spoke.count = 12;
+spoke.count = 36;
 % spoke.pattern = 'radial'; %Minimum 3 spokes
-spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
+% spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
 % spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
-
+spoke.pattern = '3-cross'; %Minimum 18 spokes (Even Number Only)
 % 3 Nodes per element on rim
 rim.elem_count = spoke.count;
 rim.node_count = 3 * rim.elem_count;

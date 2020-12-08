@@ -40,6 +40,19 @@ for spoke_node = 1:spoke.count
                 spoke_connection(2) = rim.node_count;
             end
             nodemap(spoke.count + spoke_node, :) = spoke_connection;
+            
+        case '3-cross'
+            if mod(spoke_node, 2) == 0
+                spoke_connection = [spoke_node, 2 * spoke_node + spoke.count - 6, 0];
+            else
+                spoke_connection = [spoke_node, 2 * spoke_node + spoke.count + 6, 0];
+            end
+            
+            if spoke_node == 2
+                spoke_connection(2) = rim.node_count - 2;
+            end
+            nodemap(spoke.count + spoke_node, :) = spoke_connection;
+     
      
             
     end
