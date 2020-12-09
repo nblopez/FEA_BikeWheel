@@ -44,6 +44,12 @@ fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 %% Calculate Nodemap and Global Coordinates
 [nodemap, glob_coord] = node_mapper(spoke, rim, hub);
 nnodes = max(max(nodemap));
+remove_spoke = input('Would you like to simulate a broken spoke? [y, n] ', 's');
+if strcmp(remove_spoke, 'y')
+    first_spoke  = find(nodemap(:,2) == spoke.count + 2, 1, 'first');
+    node_list = 1:nnodes;
+    nodemap = nodemap(setdiff(node_list, first_spoke), :);
+end
 % Row 1 of glob_coord is X, Row 2 of glob_coord is Y
 
 
