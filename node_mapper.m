@@ -32,25 +32,36 @@ for spoke_node = 1:spoke.count
         case '2-cross'
             % Not written yet
             if mod(spoke_node, 2) == 0
-                spoke_connection = [spoke_node, 2 * spoke_node + spoke.count - 4, 0];
+                rim_node = 2 * spoke_node + spoke.count - 4;
+                if rim_node <= spoke.count
+                    rim_node = rim_node + rim.node_count;
+                end
+                spoke_connection = [spoke_node, rim_node, 0];
             else
-                spoke_connection = [spoke_node, 2 * spoke_node + spoke.count + 4, 0];
-            end
-            if spoke_node == 2
-                spoke_connection(2) = rim.node_count;
+                rim_node = 2 * spoke_node + spoke.count + 4;
+                if rim_node > rim.node_count + spoke.count
+                    rim_node = rim_node - rim.node_count;
+                end
+                spoke_connection = [spoke_node, rim_node, 0];
             end
             nodemap(spoke.count + spoke_node, :) = spoke_connection;
             
         case '3-cross'
             if mod(spoke_node, 2) == 0
-                spoke_connection = [spoke_node, 2 * spoke_node + spoke.count - 6, 0];
+                rim_node = 2 * spoke_node + spoke.count - 6;
+                if rim_node <= spoke.count
+                    rim_node = rim_node + rim.node_count;
+                end
+                spoke_connection = [spoke_node, rim_node, 0];
+                
             else
-                spoke_connection = [spoke_node, 2 * spoke_node + spoke.count + 6, 0];
+                rim_node = 2 * spoke_node + spoke.count + 6;
+                if rim_node > rim.node_count + spoke.count
+                    rim_node = rim_node - rim.node_count;
+                end
+                spoke_connection = [spoke_node, rim_node, 0];
             end
-            
-            if spoke_node == 2
-                spoke_connection(2) = rim.node_count - 2;
-            end
+
             nodemap(spoke.count + spoke_node, :) = spoke_connection;
      
      
