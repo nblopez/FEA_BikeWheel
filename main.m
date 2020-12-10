@@ -23,16 +23,17 @@ rim.material = 'Aluminum';
 rim.rho = 2700; %kg/m^3
 rim.E = 70 * 10^9; %Pa
 rim.diameter = spoke.length * 2 + hub.diameter; %m
-rim.thickness = 0.025; %m
-rim.Ae = pi * rim.diameter^2/4; %m^2
+rim.depth = 0.025; %m, Depth into screen
+rim.thickness = 0.005; %m, Radial thickness
+rim.Ae = rim.depth * rim.thickness; %m^2
 
 
 %% Modifiable Parameters
-spoke.count = 18;
-% spoke.pattern = 'radial'; %Minimum 3 spokes
+spoke.count = 3;
+spoke.pattern = 'radial'; %Minimum 3 spokes
 % spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
 % spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
-spoke.pattern = '3-cross'; %Minimum 18 spokes (Even Number Only)
+% spoke.pattern = '3-cross'; %Minimum 18 spokes (Even Number Only)
 % 3 Nodes per element on rim
 rim.elem_count = spoke.count;
 rim.node_count = 2 * rim.elem_count;
@@ -69,9 +70,6 @@ end
 
 
 %% Deflection Calculation
-U = zeros(nnodes*2, 1); %2DoF per node
-U(4) = 1;
-
 %Inputs spoke count, number of nodes, X coord, Y coord, spoke params, rim
 %params, nodemap
 K_global = K_assembly(spoke.count, nnodes, glob_coord(1,:), glob_coord(2,:), spoke, rim, nodemap);
@@ -79,6 +77,19 @@ K_global = K_assembly(spoke.count, nnodes, glob_coord(1,:), glob_coord(2,:), spo
 %Outputs global stiffness matrix
 %Currently outputs a bunch of zeros but it is to the power E10 so hopefully
 %when we solve we actually get something
+
+alldofs = 1:2*nnodes;
+fixeddofs = 1:2*spoke.count;
+freedofs = setdiff(alldofs, fixeddofs);
+
+F = zeros(2*nnodes, 1);
+F_load = 300; %N
+F(spoke.count + 2 + 1) = F_load; %Vertical Load at lowest node on rim
+
+U = zeros(2*nnodes, 1); %2DoF per node
+U(freedofs) = K_global(freedofs, freedofs) \ F(freedofs);
+
+
 
 
 %% Analysis Outputs
