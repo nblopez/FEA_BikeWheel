@@ -8,7 +8,7 @@ spoke = struct();
 spoke.material = 'Stainless Steel';
 spoke.rho = 7600; %kg/m^3
 spoke.E = 190 * 10^9; %Pa
-spoke.length = 0.33; %m (330mm)
+spoke.length = 0.125; %m (330mm)
 spoke.diameter = 0.002; %m (2mm)
 spoke.Ae = pi * spoke.diameter^2 / 4; %m^2
 
@@ -23,18 +23,18 @@ rim.material = 'Aluminum';
 rim.rho = 2700; %kg/m^3
 rim.E = 70 * 10^9; %Pa
 rim.diameter = spoke.length * 2 + hub.diameter; %m
-rim.thickness = 0.25; %m
+rim.thickness = 0.025; %m
 
 
 %% Modifiable Parameters
 spoke.count = 18;
 % spoke.pattern = 'radial'; %Minimum 3 spokes
-spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
+% spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
 % spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
-% spoke.pattern = '3-cross'; %Minimum 18 spokes (Even Number Only)
+spoke.pattern = '3-cross'; %Minimum 18 spokes (Even Number Only)
 % 3 Nodes per element on rim
 rim.elem_count = spoke.count;
-rim.node_count = 3 * rim.elem_count;
+rim.node_count = 2 * rim.elem_count;
 
 %% Script Startup Output
 fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
