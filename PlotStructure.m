@@ -1,5 +1,6 @@
 function [] = PlotStructure(spoke, glob_coord, U, nodemap)
 labels_on = input('Would you like node numbering enabled? [y, n] ', 's');
+plot_deformation = input('Would you like to plot the deformation? [y, n] ', 's');
 
 X = glob_coord(1,:);
 Y = glob_coord(2,:);
@@ -27,9 +28,11 @@ for ii = 1:length(nodemap)
         Ydef_vec = [Y_def(enodes(jj-1)), Y_def(enodes(jj))];
         
         plot(X_vec, Y_vec, 'k', 'LineWidth', 1.25)
-        %         plot(Xdef_vec, Ydef_vec, 'b--', 'LineWidth', 2)
-        %         fprintf('Plot Element %d; Nodes: %d, %d\n',...
-        %             ii, enodes(jj-1), enodes(jj))
+        if strcmp(plot_deformation, 'y')
+                plot(Xdef_vec, Ydef_vec, 'b--', 'LineWidth', 2)
+%                 fprintf('Plot Element %d; Nodes: %d, %d\n',...
+%                     ii, enodes(jj-1), enodes(jj))
+        end
     end
     %     mean_x = mean(X_vec);
     %     mean_y = mean(Y_vec);

@@ -27,7 +27,7 @@ rim.thickness = 0.25; %m
 
 
 %% Modifiable Parameters
-spoke.count = 8;
+spoke.count = 18;
 % spoke.pattern = 'radial'; %Minimum 3 spokes
 spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
 % spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
@@ -46,9 +46,14 @@ fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 nnodes = max(max(nodemap));
 remove_spoke = input('Would you like to simulate a broken spoke? [y, n] ', 's');
 if strcmp(remove_spoke, 'y')
-    first_spoke  = find(nodemap(:,2) == spoke.count + 2, 1, 'first');
+    lower_spoke = input('Would you like to remove the lower or upper spoke? [l, u] ', 's');
+    if strcmp(lower_spoke, 'l')
+        rem_spoke = find(nodemap(:,2) == spoke.count + 2, 1, 'first');
+    else
+        rem_spoke = find(nodemap(:,2) == rim.node_count - spoke.count + 2, 1, 'first');
+    end
     node_list = 1:nnodes;
-    nodemap = nodemap(setdiff(node_list, first_spoke), :);
+    nodemap = nodemap(setdiff(node_list, rem_spoke), :);
 end
 % Row 1 of glob_coord is X, Row 2 of glob_coord is Y
 
