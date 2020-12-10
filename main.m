@@ -24,6 +24,7 @@ rim.rho = 2700; %kg/m^3
 rim.E = 70 * 10^9; %Pa
 rim.diameter = spoke.length * 2 + hub.diameter; %m
 rim.thickness = 0.025; %m
+rim.Ae = pi * rim.diameter^2/4; %m^2
 
 
 %% Modifiable Parameters
@@ -70,6 +71,14 @@ end
 %% Deflection Calculation
 U = zeros(nnodes*2, 1); %2DoF per node
 U(4) = 1;
+
+%Inputs spoke count, number of nodes, X coord, Y coord, spoke params, rim
+%params, nodemap
+K_global = K_assembly(spoke.count, nnodes, glob_coord(1,:), glob_coord(2,:), spoke, rim, nodemap);
+
+%Outputs global stiffness matrix
+%Currently outputs a bunch of zeros but it is to the power E10 so hopefully
+%when we solve we actually get something
 
 
 %% Analysis Outputs
