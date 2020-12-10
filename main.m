@@ -8,7 +8,7 @@ spoke = struct();
 spoke.material = 'Stainless Steel';
 spoke.rho = 7600; %kg/m^3
 spoke.E = 190 * 10^9; %Pa
-spoke.length = 0.125; %m (330mm)
+spoke.length = 0.300; %m (300mm)
 spoke.diameter = 0.002; %m (2mm)
 spoke.Ae = pi * spoke.diameter^2 / 4; %m^2
 
@@ -29,7 +29,7 @@ rim.Ae = rim.depth * rim.thickness; %m^2
 
 
 %% Modifiable Parameters
-spoke.count = 3;
+spoke.count = 6;
 spoke.pattern = 'radial'; %Minimum 3 spokes
 % spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
 % spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
@@ -46,7 +46,8 @@ fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 %% Calculate Nodemap and Global Coordinates
 [nodemap, glob_coord] = node_mapper(spoke, rim, hub);
 nnodes = max(max(nodemap));
-remove_spoke = input('Would you like to simulate a broken spoke? [y, n] ', 's');
+% remove_spoke = input('Would you like to simulate a broken spoke? [y, n] ', 's');
+remove_spoke ='n';
 if strcmp(remove_spoke, 'y')
     lower_spoke = input('Would you like to remove the lower or upper spoke? [l, u] ', 's');
     if strcmp(lower_spoke, 'l')
@@ -83,11 +84,12 @@ fixeddofs = 1:2*spoke.count;
 freedofs = setdiff(alldofs, fixeddofs);
 
 F = zeros(2*nnodes, 1);
-F_load = 300; %N
-F(spoke.count + 2 + 1) = F_load; %Vertical Load at lowest node on rim
+F_load = 10; %N
+F(2*spoke.count + 4) = F_load; %Vertical Load at lowest node on rim
 
 U = zeros(2*nnodes, 1); %2DoF per node
-U(freedofs) = K_global(freedofs, freedofs) \ F(freedofs);
+K_reduced = K_global(freedofs, freedofs);
+U(freedofs) = K_reduced \ F(freedofs);
 
 
 
