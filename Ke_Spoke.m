@@ -1,7 +1,7 @@
 function ke = Ke_Spoke(E, Ae, Xe, Ye)
 % Define displacement across spoke
-X_diff = Xe(2)-Xe(1);
-Y_diff = Ye(2)-Ye(1);
+X_diff = Xe(1)-Xe(2);
+Y_diff = Ye(1)-Ye(2);
 
 %Calculate angle of spoke
 theta = atan(Y_diff/X_diff);
