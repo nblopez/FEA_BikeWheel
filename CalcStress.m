@@ -1,4 +1,4 @@
-function [sig_xx, sig_yy] = CalcStress(spoke, rim, X, Y, U, N_func, N_diff, nodemap)
+function [sig_xx, sig_yy] = CalcStress(spoke, rim, X, Y, U, nodemap)
 
     map_hub = nodemap(1:spoke.count,1:2);  % separating hub elements
     
@@ -11,14 +11,28 @@ function [sig_xx, sig_yy] = CalcStress(spoke, rim, X, Y, U, N_func, N_diff, node
     sig_xx = zeros(num_nodes,1);        
     sig_yy = zeros(num_nodes,1); 
     
+    [spoke.sig_xx, spoke.sig_yy] = spoke_Stress(spoke, U, map_spoke);
     
+    sig_xx(map_spoke(:,1)) = sig_xx(map_spoke(:,1)) + spoke.sig_xx;
+    sig_yy(map_spoke(:,1)) = sig_yy(map_spoke(:,1)) + spoke.sig_yy;
+    sig_xx(map_spoke(:,2)) = sig_xx(map_spoke(:,2)) + spoke.sig_xx;
+    sig_yy(map_spoke(:,2)) = sig_yy(map_spoke(:,2)) + spoke.sig_yy;
+
     
-    [ sig_xx(map_spoke(:,1)) , sig_yy(map_spoke(:,1))] = [ sig_xx(map_spoke(:,1)) , sig_yy(map_spoke(:,1))]+spoke_Stress(spoke, U, map_spoke);
-    [ sig_xx(map_spoke(:,2)) , sig_yy(map_spoke(:,2))] = [ sig_xx(map_spoke(:,2)) , sig_yy(map_spoke(:,2))]+spoke_Stress(spoke, U, map_spoke);
+    [rim.sig_xx, rim.sig_yy] = rim_Stress(rim, spoke, X, Y, U, map_rim);
+    sig_xx(map_rim(:,1)) = sig_xx(map_rim(:,1)) + rim.sig_xx;
+    sig_yy(map_rim(:,1)) = sig_yy(map_rim(:,1)) + rim.sig_yy;
+    sig_xx(map_rim(:,2)) = sig_xx(map_rim(:,2)) + rim.sig_xx;
+    sig_yy(map_rim(:,2)) = sig_yy(map_rim(:,2)) + rim.sig_yy;
+    sig_xx(map_rim(:,3)) = sig_xx(map_rim(:,3)) + rim.sig_xx;
+    sig_yy(map_rim(:,3)) = sig_yy(map_rim(:,3)) + rim.sig_yy;
     
-    [ sig_xx(map_rim(:,1)) , sig_yy(map_rim(:,1))] = [ sig_xx(map_rim(:,1)) , sig_yy(map_rim(:,1))]+rim_Stress(rim, X, Y, U, N_func, N_diff, map_rim);
-    [ sig_xx(map_rim(:,2)) , sig_yy(map_rim(:,2))] = [ sig_xx(map_rim(:,2)) , sig_yy(map_rim(:,2))]+rim_Stress(rim, X, Y, U, N_func, N_diff, map_rim);
-    [ sig_xx(map_rim(:,3)) , sig_yy(map_rim(:,3))] = [ sig_xx(map_rim(:,3)) , sig_yy(map_rim(:,3))]+rim_Stress(rim, X, Y, U, N_func, N_diff, map_rim);
+%     [ sig_xx(map_spoke(:,1)) , sig_yy(map_spoke(:,1))] = [ sig_xx(map_spoke(:,1)) , sig_yy(map_spoke(:,1))]+spoke_Stress(spoke, U, map_spoke);
+%     [ sig_xx(map_spoke(:,2)) , sig_yy(map_spoke(:,2))] = [ sig_xx(map_spoke(:,2)) , sig_yy(map_spoke(:,2))]+spoke_Stress(spoke, U, map_spoke);
+    
+%     [ sig_xx(map_rim(:,1)) , sig_yy(map_rim(:,1))] = [ sig_xx(map_rim(:,1)) , sig_yy(map_rim(:,1))]+rim_Stress(rim, X, Y, U, map_rim);
+%     [ sig_xx(map_rim(:,2)) , sig_yy(map_rim(:,2))] = [ sig_xx(map_rim(:,2)) , sig_yy(map_rim(:,2))]+rim_Stress(rim, X, Y, U, map_rim);
+%     [ sig_xx(map_rim(:,3)) , sig_yy(map_rim(:,3))] = [ sig_xx(map_rim(:,3)) , sig_yy(map_rim(:,3))]+rim_Stress(rim, X, Y, U, map_rim);
     
     
 end
@@ -34,14 +48,14 @@ function [sig_xx, sig_yy] = spoke_Stress(spoke, U, spoke_nodemap)
 end
 
 
-function [sig_xx, sig_yy] = rim_Stress(rim, X, Y, U, map_rim)
+function [sig_xx, sig_yy] = rim_Stress(rim, spoke, Xe, Ye, U, map_rim)
     
 
     start_angle = atan(Ye(2) / Xe(2));
     r = rim.diameter / 2;
     d_theta = 2 * pi / (spoke.count);
     
-    theta_arr = [-d_theta/2, 0, d_theta/2] + ang_offset + start_angle;
+    theta_arr = [-d_theta/2, 0, d_theta/2] + 0.1 + start_angle;
     Le = r*d_theta;
 
     syms S
@@ -74,9 +88,24 @@ function [sig_xx, sig_yy] = rim_Stress(rim, X, Y, U, map_rim)
     n_rim = n_rim(1);
     sig_xx = [];
     sig_yy = [];
-    for i = 1:n_rim  
-        [sig_x,sig_y,] =  E*B*U(map_rim(i,:));                     % stress calculation
-        [sig_xx, sig_yy] = [sig_xx, sig_yy ; sig_x , sig_y];    % appending sigmas
+    for i = 1:n_rim 
+        dofs = max(map_rim(i,:))*2 - 5:max(map_rim(i,:)*2);
+        sig =  E_rim*B*U(dofs);                     % stress calculation
+        sig_x = sig(1);
+        sig_y = sig(2);
+        sig_xx = [sig_xx; sig_x];    % appending sigmas
+        sig_yy = [sig_yy; sig_y];
     end
+    
+    sig_xxd = 0;
+    sig_yyd = 0;
+    w = [5/9, 8/9, 5/9] * Le;
+    for ii = 1:3
+        sig_xxd = sig_xxd + subs(sig_xx, S, w(ii));
+        sig_yyd = sig_yyd + subs(sig_yy, S, w(ii));
+    end
+   
+    sig_xx = sig_xxd;
+    sig_yy = sig_yyd;
     
 end

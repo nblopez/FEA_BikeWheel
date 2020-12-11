@@ -29,10 +29,16 @@ rim.Ae = rim.depth * rim.thickness; %m^2
 
 
 %% Modifiable Parameters
+% i = 1;
+% 
+% for spoke_count = 6:4:36
+% tic
+% spoke.count = spoke_count;
+
 spoke.count = 12;
-% spoke.pattern = 'radial'; %Minimum 3 spokes
+spoke.pattern = 'radial'; %Minimum 3 spokes
 % spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
-spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
+% spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
 % spoke.pattern = '3-cross'; %Minimum 18 spokes (Even Number Only)
 % 3 Nodes per element on rim
 rim.elem_count = spoke.count;
@@ -66,19 +72,21 @@ freedofs = setdiff(alldofs, fixeddofs);
 
 F = zeros(2*nnodes, 1);
 F_load = 300; %N
-% F(2*spoke.count + 4) = F_load; %F1
+F(2*spoke.count + 4) = F_load; %F1
 % F(2*spoke.count + 3) = -F_load; %F2
-F(2*spoke.count + 6) = F_load; %F3
+% F(2*spoke.count + 6) = F_load; %F3
 U = zeros(2*nnodes, 1); %2DoF per node
 K_reduced = K_global(freedofs, freedofs);
 U(freedofs) = K_reduced \ F(freedofs);
 
+%% Stress Calculation
+[s_xx, s_yy] = CalcStress(spoke, rim, glob_coord(1,:), glob_coord(2,:), U, nodemap)
 
 
 
 %% Analysis Outputs
 % print_details = input('Would you like to print fine details? [y, n] ', 's');
-print_details = 'y'
+print_details = 'y';
 if strcmp(print_details, 'y')
 %     fprintf('Node Map; Nodes of value 0 do not exist.\n')
 %     disp(nodemap)
@@ -92,14 +100,18 @@ if strcmp(print_details, 'y')
 %     disp(node_def)
     
     
-    [max_def_row, ~] = ind2sub(size(node_def), find(node_def == max(max(node_def))));
-    fprintf('Maximum deflection occurs at node: %d\nDeflections [mm]: X = %0.3f, Y = %0.3f\n', ...
+    [max_def_row, ~] = ind2sub(size(node_def), find(abs(node_def) == max(max(abs(node_def(:,2:3))))));
+    fprintf('Maximum deflection occurs at node: %d\nDeflections [mm]: X = %0.3e, Y = %0.3e\n', ...
         node_def(max_def_row, 1), node_def(max_def_row, 2), node_def(max_def_row, 3))
     
 end
+% max_def(i, :) = [spoke.count, node_def(max_def_row, 2), node_def(max_def_row, 3)];
+% calc_time(i, :) = [spoke.count, toc];
+% i = i + 1;
+% end
 
-% PlotStructure(spoke, glob_coord, U, nodemap)
-
+PlotStructure(spoke, glob_coord, U, nodemap)
+PlotStressStructure(spoke, glob_coord, s_xx, s_yy, nodemap);
 
 
 
