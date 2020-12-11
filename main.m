@@ -40,6 +40,8 @@ rim.node_count = 2 * rim.elem_count;
 
 %% Script Startup Output
 fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+fprintf('Written by: Mujahid Ahmed, Noah Lopez, Pulkit Rustagi\n')
+fprintf('Course: ME471/AE420 Fall 2020\n')
 fprintf('Beginning of FEA of Bike Wheel\n')
 fprintf('Spoke Count: %d\nSpoke Pattern: %s\n',spoke.count, spoke.pattern)
 fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
