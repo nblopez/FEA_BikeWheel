@@ -29,13 +29,7 @@ rim.Ae = rim.depth * rim.thickness; %m^2
 
 
 %% Modifiable Parameters
-% i = 1;
-% 
-% for spoke_count = 6:4:36
-% tic
-% spoke.count = spoke_count;
-
-spoke.count = 12;
+spoke.count = 24;
 spoke.pattern = 'radial'; %Minimum 3 spokes
 % spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
 % spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
@@ -52,17 +46,12 @@ fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 %% Calculate Nodemap and Global Coordinates
 [nodemap, glob_coord] = node_mapper(spoke, rim, hub);
 nnodes = max(max(nodemap));
-
 % Row 1 of glob_coord is X, Row 2 of glob_coord is Y
-
+X = glob_coord(1,:);
+Y = glob_coord(2,:);
 
 %% Calculate Global Stiffness Matrix
-%Inputs spoke count, number of nodes, X coord, Y coord, spoke params, rim
-%params, nodemap
-K_global = K_assembly(nnodes, glob_coord(1,:), glob_coord(2,:), spoke, rim, nodemap);
-%Outputs global stiffness matrix
-%Currently outputs a bunch of zeros but it is to the power E10 so hopefully
-%when we solve we actually get something
+K_global = K_assembly(nnodes, X, Y, spoke, rim, nodemap);
 
 
 %% Deflection Calculation
@@ -80,24 +69,22 @@ K_reduced = K_global(freedofs, freedofs);
 U(freedofs) = K_reduced \ F(freedofs);
 
 %% Stress Calculation
-[s_xx, s_yy] = CalcStress(spoke, rim, glob_coord(1,:), glob_coord(2,:), U, nodemap)
-
+[s_xx, s_yy] = CalcStress(spoke, rim, X, Y, U, nodemap);
 
 
 %% Analysis Outputs
-% print_details = input('Would you like to print fine details? [y, n] ', 's');
-print_details = 'y';
+print_details = input('Would you like to print fine details? [y, n] ', 's');
 if strcmp(print_details, 'y')
-%     fprintf('Node Map; Nodes of value 0 do not exist.\n')
-%     disp(nodemap)
+    fprintf('Node Map; Nodes of value 0 do not exist.\n')
+    disp(nodemap)
     
-%     fprintf('Global Coordinates; [X, Y]^T\n')
-%     disp(glob_coord)
+    fprintf('Global Coordinates; [X, Y]^T\n')
+    disp(glob_coord)
     
     
-%     fprintf('Node Deformation Array;\nNumber, X [mm], Y [mm]\n')
+    fprintf('Node Deformation Array;\nNumber, X [mm], Y [mm]\n')
     node_def = [[1:nnodes]', U(1:2:end) * 1e3, U(2:2:end) * 1e3];
-%     disp(node_def)
+    disp(node_def)
     
     
     [max_def_row, ~] = ind2sub(size(node_def), find(abs(node_def) == max(max(abs(node_def(:,2:3))))));
@@ -105,10 +92,6 @@ if strcmp(print_details, 'y')
         node_def(max_def_row, 1), node_def(max_def_row, 2), node_def(max_def_row, 3))
     
 end
-% max_def(i, :) = [spoke.count, node_def(max_def_row, 2), node_def(max_def_row, 3)];
-% calc_time(i, :) = [spoke.count, toc];
-% i = i + 1;
-% end
 
 PlotStructure(spoke, glob_coord, U, nodemap)
 PlotStressStructure(spoke, glob_coord, s_xx, s_yy, nodemap);

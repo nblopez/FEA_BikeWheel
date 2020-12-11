@@ -27,14 +27,6 @@ function [sig_xx, sig_yy] = CalcStress(spoke, rim, X, Y, U, nodemap)
     sig_xx(map_rim(:,3)) = sig_xx(map_rim(:,3)) + rim.sig_xx;
     sig_yy(map_rim(:,3)) = sig_yy(map_rim(:,3)) + rim.sig_yy;
     
-%     [ sig_xx(map_spoke(:,1)) , sig_yy(map_spoke(:,1))] = [ sig_xx(map_spoke(:,1)) , sig_yy(map_spoke(:,1))]+spoke_Stress(spoke, U, map_spoke);
-%     [ sig_xx(map_spoke(:,2)) , sig_yy(map_spoke(:,2))] = [ sig_xx(map_spoke(:,2)) , sig_yy(map_spoke(:,2))]+spoke_Stress(spoke, U, map_spoke);
-    
-%     [ sig_xx(map_rim(:,1)) , sig_yy(map_rim(:,1))] = [ sig_xx(map_rim(:,1)) , sig_yy(map_rim(:,1))]+rim_Stress(rim, X, Y, U, map_rim);
-%     [ sig_xx(map_rim(:,2)) , sig_yy(map_rim(:,2))] = [ sig_xx(map_rim(:,2)) , sig_yy(map_rim(:,2))]+rim_Stress(rim, X, Y, U, map_rim);
-%     [ sig_xx(map_rim(:,3)) , sig_yy(map_rim(:,3))] = [ sig_xx(map_rim(:,3)) , sig_yy(map_rim(:,3))]+rim_Stress(rim, X, Y, U, map_rim);
-    
-    
 end
 
 
