@@ -46,47 +46,29 @@ fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 %% Calculate Nodemap and Global Coordinates
 [nodemap, glob_coord] = node_mapper(spoke, rim, hub);
 nnodes = max(max(nodemap));
-% remove_spoke = input('Would you like to simulate a broken spoke? [y, n] ', 's');
-remove_spoke ='n';
-if strcmp(remove_spoke, 'y')
-    lower_spoke = input('Would you like to remove the lower or upper spoke? [l, u] ', 's');
-    if strcmp(lower_spoke, 'l')
-        rem_spoke = find(nodemap(:,2) == spoke.count + 2, 1, 'first');
-    else
-        rem_spoke = find(nodemap(:,2) == rim.node_count - spoke.count + 2, 1, 'first');
-    end
-    node_list = 1:nnodes;
-    nodemap = nodemap(setdiff(node_list, rem_spoke), :);
-end
+
 % Row 1 of glob_coord is X, Row 2 of glob_coord is Y
 
 
-
-
-
-
-
-
-
-
-
-%% Deflection Calculation
+%% Calculate Global Stiffness Matrix
 %Inputs spoke count, number of nodes, X coord, Y coord, spoke params, rim
 %params, nodemap
 K_global = K_assembly(nnodes, glob_coord(1,:), glob_coord(2,:), spoke, rim, nodemap);
-
 %Outputs global stiffness matrix
 %Currently outputs a bunch of zeros but it is to the power E10 so hopefully
 %when we solve we actually get something
 
+
+%% Deflection Calculation
 alldofs = 1:2*nnodes;
 fixeddofs = 1:2*spoke.count;
 freedofs = setdiff(alldofs, fixeddofs);
 
 F = zeros(2*nnodes, 1);
 F_load = 300; %N
-F(2*spoke.count + 4) = F_load; %Vertical Load at lowest node on rim
-
+% F(2*spoke.count + 4) = F_load; %F1
+% F(2*spoke.count + 3) = -F_load; %F2
+F(2*spoke.count + 6) = F_load; %F3
 U = zeros(2*nnodes, 1); %2DoF per node
 K_reduced = K_global(freedofs, freedofs);
 U(freedofs) = K_reduced \ F(freedofs);
@@ -95,18 +77,19 @@ U(freedofs) = K_reduced \ F(freedofs);
 
 
 %% Analysis Outputs
-print_details = input('Would you like to print fine details? [y, n] ', 's');
+% print_details = input('Would you like to print fine details? [y, n] ', 's');
+print_details = 'y'
 if strcmp(print_details, 'y')
-    fprintf('Node Map; Nodes of value 0 do not exist.\n')
-    disp(nodemap)
+%     fprintf('Node Map; Nodes of value 0 do not exist.\n')
+%     disp(nodemap)
     
-    fprintf('Global Coordinates; [X, Y]^T\n')
-    disp(glob_coord)
+%     fprintf('Global Coordinates; [X, Y]^T\n')
+%     disp(glob_coord)
     
     
-    fprintf('Node Deformation Array;\nNumber, X [mm], Y [mm]\n')
+%     fprintf('Node Deformation Array;\nNumber, X [mm], Y [mm]\n')
     node_def = [[1:nnodes]', U(1:2:end) * 1e3, U(2:2:end) * 1e3];
-    disp(node_def)
+%     disp(node_def)
     
     
     [max_def_row, ~] = ind2sub(size(node_def), find(node_def == max(max(node_def))));
@@ -115,7 +98,7 @@ if strcmp(print_details, 'y')
     
 end
 
-PlotStructure(spoke, glob_coord, U, nodemap)
+% PlotStructure(spoke, glob_coord, U, nodemap)
 
 
 
