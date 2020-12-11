@@ -13,6 +13,8 @@ Y_diff1 = Ye(2)-Ye(1);
 X_diff2 = Xe(3)-Xe(2);
 Y_diff2 = Ye(3)-Ye(2);
 
+Le = sqrt((X_diff1 + X_diff2)^2 + (Y_diff1 + Y_diff2)^2);
+
 %Define angles based on those deisplacements
 theta1 = atan(Y_diff1/X_diff1);
 c1 = cos(theta1);
@@ -41,5 +43,5 @@ k_e2(3:6,3:6) = [c2^2 c2*s2 -c2^2 -c2*s2;
 %Combine element matrices
 ke_basic = k_e1+k_e2;
 
-ke = E*Ae*ke_basic;
+ke = E*Ae/Le*ke_basic;
 end
