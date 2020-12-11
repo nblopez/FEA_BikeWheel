@@ -1,0 +1,67 @@
+function [] = PlotStressStructure(spoke, glob_coord, s_xx, s_yy, nodemap);
+
+% labels_on = input('Would you like node numbering enabled? [y, n] ', 's');
+% plot_deformation = input('Would you like to plot the deformation? [y, n] ', 's');
+% plot_deformation = 'y';
+X = glob_coord(1,:);
+Y = glob_coord(2,:);
+% Scale deformation to set Max deflection to 1mm equiv
+% scale_val = 1e-3 / max(abs(U));
+% scale_val = max(abs(U)) / .005;
+% scale_val = 1e8;
+% X_def = X' + U(1:2:end) .* scale_val;
+% Y_def = Y' + U(2:2:end) .* scale_val;
+
+% Initial Scatter Plot of Each Point
+figure('Name', 'Plot of Stress xx')
+hold on
+% fprintf('\nPlotting Node Deformations\n')
+for ii = 1:length(nodemap)
+    enodes = nodemap(ii, :);
+    if enodes(end) == 0
+        enodes = enodes(1:end-1);
+    end
+    %     enodes = [enodes(end), enodes]; %Put end of enodes at beginning
+    for jj = 2:length(enodes)
+        X_vec = [X(enodes(jj-1)), X(enodes(jj))];
+        Y_vec = [Y(enodes(jj-1)), Y(enodes(jj))];
+               
+        plot(X_vec, Y_vec, 'k', 'LineWidth', 1.25)       
+    end
+end
+scatter(X, Y, 250, s_xx, 'filled')
+c = colorbar;
+c.Label.String = 'Stress [Pa]';
+grid
+title('Plot of Stress at Wheel Nodes [\sigma_{xx}]')
+xlabel('X Position [m]')
+ylabel('Y Position [m]')
+axis image
+hold off
+
+figure('Name', 'Plot of Stress yy')
+hold on
+% fprintf('\nPlotting Node Deformations\n')
+for ii = 1:length(nodemap)
+    enodes = nodemap(ii, :);
+    if enodes(end) == 0
+        enodes = enodes(1:end-1);
+    end
+    %     enodes = [enodes(end), enodes]; %Put end of enodes at beginning
+    for jj = 2:length(enodes)
+        X_vec = [X(enodes(jj-1)), X(enodes(jj))];
+        Y_vec = [Y(enodes(jj-1)), Y(enodes(jj))];
+               
+        plot(X_vec, Y_vec, 'k', 'LineWidth', 1.25)       
+    end
+end
+scatter(X, Y, 250, s_yy, 'filled')
+c = colorbar;
+c.Label.String = 'Stress [Pa]';
+grid
+title('Plot of Stress at Wheel Nodes [\sigma_{yy}]')
+xlabel('X Position [m]')
+ylabel('Y Position [m]')
+axis image
+hold off
+
