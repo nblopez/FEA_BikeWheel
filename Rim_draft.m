@@ -8,6 +8,7 @@ d_theta = abs(theta3-theta1);
 Le = .125*d_theta;
 
 syms S x y
+assume([x, y], 'Real')
 N1 = 2*S^2/Le^2 - 3*S/Le;
 N2 = -4*S^2/Le^2 + 4*S/Le;
 N3 = 2*S^2/Le^2 - S/Le;

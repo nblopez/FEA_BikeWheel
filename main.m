@@ -29,10 +29,10 @@ rim.Ae = rim.depth * rim.thickness; %m^2
 
 
 %% Modifiable Parameters
-spoke.count = 6;
-spoke.pattern = 'radial'; %Minimum 3 spokes
+spoke.count = 12;
+% spoke.pattern = 'radial'; %Minimum 3 spokes
 % spoke.pattern = '1-cross'; %Minimum 6 spokes (Even Number Only)
-% spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
+spoke.pattern = '2-cross'; %Minimum 12 spokes (Even Number Only)
 % spoke.pattern = '3-cross'; %Minimum 18 spokes (Even Number Only)
 % 3 Nodes per element on rim
 rim.elem_count = spoke.count;
@@ -73,7 +73,7 @@ end
 %% Deflection Calculation
 %Inputs spoke count, number of nodes, X coord, Y coord, spoke params, rim
 %params, nodemap
-K_global = K_assembly(spoke.count, nnodes, glob_coord(1,:), glob_coord(2,:), spoke, rim, nodemap);
+K_global = K_assembly(nnodes, glob_coord(1,:), glob_coord(2,:), spoke, rim, nodemap);
 
 %Outputs global stiffness matrix
 %Currently outputs a bunch of zeros but it is to the power E10 so hopefully
@@ -84,7 +84,7 @@ fixeddofs = 1:2*spoke.count;
 freedofs = setdiff(alldofs, fixeddofs);
 
 F = zeros(2*nnodes, 1);
-F_load = 10; %N
+F_load = 300; %N
 F(2*spoke.count + 4) = F_load; %Vertical Load at lowest node on rim
 
 U = zeros(2*nnodes, 1); %2DoF per node

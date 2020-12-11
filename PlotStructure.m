@@ -1,14 +1,15 @@
 function [] = PlotStructure(spoke, glob_coord, U, nodemap)
 labels_on = input('Would you like node numbering enabled? [y, n] ', 's');
-plot_deformation = input('Would you like to plot the deformation? [y, n] ', 's');
-
+% plot_deformation = input('Would you like to plot the deformation? [y, n] ', 's');
+plot_deformation = 'y';
 X = glob_coord(1,:);
 Y = glob_coord(2,:);
 % Scale deformation to set Max deflection to 1mm equiv
 % scale_val = 1e-3 / max(abs(U));
-scale_val = max(abs(U)) / .005;
-X_def = X' + U(1:2:end) .* 1/scale_val;
-Y_def = Y' + U(2:2:end) .* 1/scale_val;
+% scale_val = max(abs(U)) / .005;
+scale_val = 1e8
+X_def = X' + U(1:2:end) .* scale_val;
+Y_def = Y' + U(2:2:end) .* scale_val;
 
 % Initial Scatter Plot of Each Point
 figure('Name', 'Plot of Deformed Structure')

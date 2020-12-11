@@ -1,48 +1,57 @@
-Xe = [1 2 3];
-Ye = [-2 -5 -2];
+% Xe = [1 2 3];
+% Ye = [-2 -5 -2];
+thickness = 0.1
+x_spoke = 3;
+r = .125;
+d_theta = 2 * pi / (x_spoke);
+spoke_num = 1;
+
+theta_arr = [-d_theta/2, 0, d_theta/2] + 0.1;
 
 E = 1e6;
-theta1 = pi - tan(Ye(1)/Xe(1));
-theta3 = pi - tan(Ye(3)/Xe(3));
-d_theta = abs(theta3-theta1);
-Le = .125*d_theta;
+% theta1 = pi - tan(Ye(1)/Xe(1));
+% theta3 = pi - tan(Ye(3)/Xe(3));
+% d_theta = abs(theta3-theta1);
+Le = r*d_theta;
 
-syms S z n real
-N1 = 2*S^2/Le^2 - 3*S/Le;
+syms S
+assume(S, 'Real')
+% assume([z, n], 'Real')
+N1 = 2*S^2/Le^2 - 3*S/Le + 1;
 N2 = -4*S^2/Le^2 + 4*S/Le;
 N3 = 2*S^2/Le^2 - S/Le;
-Sx = sqrt(z^2+n^2)*atan(n/z);
-N_umat = [N1 N2 N3];
-N_mat = subs(N_umat,S,Sx);
+% Sx = sqrt(z^2+n^2)*atan(n/z);
+% N_umat = [N1 N2 N3];
+% N_mat = subs(N_umat,S,Sx);
 
-Nu_d = sym('a' ,2);
-for k = 1:3
-    Nu_d(1,k) = diff(N_mat(k),z);
-    Nu_d(2,k) = diff(N_mat(k),n);
-end
+N_mat = [N1, N2, N3];
+N_diff = diff(N_mat, S);
 
+rt_func = r * dot(theta_arr, N_mat);
+% xe_func = dot(Xe, N_mat);
+% ye_func = dot(Ye, N_mat);
 
-%Find derivative of global coordinates wrt local coordinates
-dx_dz = 0; dy_dz = 0; dx_dn = 0; dy_dn = 0;
-for i = 1:3
-    dx_dz = dx_dz + Xe(i)*diff(N_mat(i),z);
-    dy_dz = dy_dz + Ye(i)*diff(N_mat(i),z);
-    dx_dn = dx_dn + Xe(i)*diff(N_mat(i),n);
-    dy_dn = dy_dn + Ye(i)*diff(N_mat(i),n);
-end
+J = diff(rt_func, S);
+J_det = det(J); 
 
-%Compile Jacobian Matrix
-J(1,1) = dx_dz; J(1,2) = dy_dz; J(2,1) = dx_dn; J(2,2) = dy_dn;
-J = vpa(J,5);
+dN = J \ N_diff;
+dNdx = dN * 1 ./ cos(theta_arr);
+dNdy = dN * 1 ./ sin(theta_arr);
+
 
 %Solve for derivitive wrt 
-N_d = inv(J)*Nu_d;
+B = [dNdx(1), 0, dNdx(2), 0, dNdx(3), 0;...
+    0, dNdy(1), 0, dNdy(2), 0, dNdy(3);...
+    dNdy(1), dNdx(1), dNdy(2), dNdx(2), dNdy(3), dNdx(3)];
 
-B = [N_d(1,1) 0 N_d(1,2) 0 N_d(1,3) 0
-    0 N_d(2,1) 0 N_d(2,2) 0 N_d(2,3)
-    N_d(1,1) N_d(2,1) N_d(1,2) N_d(2,2) N_d(1,3) N_d(2,3)];
+calc_mat = thickness *  B' * E * B * J_det;
 
-integrand = B'*E*B;
+ke = zeros(size(calc_mat));
+w = [5/9, 8/9, 5/9] * Le;
+for ii = 1:3
+    ke = ke + subs(calc_mat, S, w(ii));
+end
+
 % 
 % N = 2;
 % [xg, wx] = lgwt(N,Xe(1),Xe(3));
